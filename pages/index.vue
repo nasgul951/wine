@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="font-title">Wine List</h1>
+    <h1 class="text-lg">Wine List</h1>
     <table>
       <thead>
         <tr>
