@@ -1,7 +1,7 @@
 export default {
   publicRuntimeConfig: {
     apiBaseUrl: process.env.API_BASE_URL,
-    apiKey: process.env.API_KEY
+    apiKey: process.env.API_KEY,
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -44,6 +44,10 @@ export default {
   modules: [
     '@nuxtjs/axios'
   ],
+
+  axios: {
+
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
