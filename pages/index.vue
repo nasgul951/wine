@@ -46,18 +46,45 @@
         <thead class="block md:table-header-group">
           <tr class="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto  md:relative ">
               <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell"
-               @click="setSortField('varietal')"
-              >Variatal
+               @click="setSortField('varietal')">
+               <div class="flex">
+                  <div class="flex-grow">Variatal</div>
+                  <icon v-if="sortField === 'varietal'" 
+                     class="w-5 h-5 text-white transform"
+                     :class="{'rotate-180': (sortDir === 'asc')}" 
+                     type="chevron"/>
+               </div>
               </th>
               <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell"
-               @click="setSortField('vineyard')"
-              >Vineyard</th>
+               @click="setSortField('vineyard')">
+               <div class="flex">
+                  <div class="flex-grow">Vineyard</div>
+                  <icon v-if="sortField === 'vineyard'" 
+                     class="w-5 h-5 text-white transform"
+                     :class="{'rotate-180': (sortDir === 'asc')}" 
+                     type="chevron"/>
+               </div>
+              </th>
               <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell"
-               @click="setSortField('label')"
-              >Label</th>
+               @click="setSortField('label')">
+               <div class="flex">
+                  <div class="flex-grow">Label</div>
+                  <icon v-if="sortField === 'label'" 
+                     class="w-5 h-5 text-white transform"
+                     :class="{'rotate-180': (sortDir === 'asc')}" 
+                     type="chevron"/>
+               </div>
+              </th>
               <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell"
-               @click="setSortField('vintage')"
-              >Vintage</th>
+               @click="setSortField('vintage')">
+               <div class="flex">
+                  <div class="flex-grow">Vintage</div>
+                  <icon v-if="sortField === 'vintage'" 
+                     class="w-5 h-5 text-white transform"
+                     :class="{'rotate-180': (sortDir === 'asc')}" 
+                     type="chevron"/>
+               </div>
+              </th>
               <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell"
               >Count</th>
           </tr>
@@ -103,9 +130,10 @@ import Vue from 'vue'
 import ItemPicker from '~/components/ItemPicker.vue';
 import WineDetail from '~/components/WineDetail.vue';
 import AddWine from '~/components/AddWine.vue';
+import Icon from '~/components/Icon.vue';
 
 export default Vue.extend({
-   components: { ItemPicker, WineDetail, AddWine },
+   components: { ItemPicker, WineDetail, AddWine, Icon },
    async asyncData ({$axios, $config, error}) {
       const url = `${$config.apiBaseUrl}/wine/`
       try {
@@ -117,7 +145,7 @@ export default Vue.extend({
          } else {
             throw { statusCode: 500, message: 'Data Error!'}
          }
-      } catch (ex) {
+      } catch (ex: any) {
          error(ex)
       }
    },

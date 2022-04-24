@@ -72,7 +72,8 @@ export default {
          }
       }
       
-   }
+   },
+   resetOnError: true
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
