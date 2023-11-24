@@ -1,4 +1,6 @@
 export default {
+  target: 'static',
+  ssr: false,
   publicRuntimeConfig: {
     apiBaseUrl: process.env.API_BASE_URL,
     apiKey: process.env.API_KEY,
