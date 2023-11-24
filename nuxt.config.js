@@ -39,6 +39,7 @@ export default {
     '@nuxt/typescript-build',
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/vuetify'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -53,6 +54,8 @@ export default {
   auth: {
    redirect: {
       login: '/login/',
+      logout: false,
+      callback: false,
       home: '/'
    },
    strategies: {
@@ -60,7 +63,6 @@ export default {
          token: {
             property: 'token',
             name: 'x-api-key',
-            type: ''
          },
          user: {
             autoFetch: false
