@@ -1,59 +1,53 @@
 <template>
   <div>
-   <v-app-bar
-      color="orange"
-   >
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-      <v-toolbar-title>Wine List</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-menu
-         bottom
-         left-0
+      <v-app-bar
+         color="deep-purple accent-4"
       >
-         <template v-slot:activator="{ on, attrs }">
+         <v-app-bar-nav-icon></v-app-bar-nav-icon>
+         <v-toolbar-title>Wine List</v-toolbar-title>
+         <v-spacer></v-spacer>
+         <v-btn
+            icon
+            @click=" showAddWine = true"
+         >
+            <v-icon>mdi-plus</v-icon>
+         </v-btn>
+         <v-btn
+            icon
+            @click=" showStoreLayout = true"
+         >
+            <v-icon>mdi-grid</v-icon>
+         </v-btn>
+      </v-app-bar>
+
+      <v-data-table
+         :headers="headers"
+         :items="wines"
+         :loading="loading"
+         show-group-by
+         :items-per-page="pageSize"
+      >
+         <template #[`item.detail`]="{item}">
             <v-btn
                icon
                color="yellow"
-               v-bind="attrs"
-               v-on="on"
+               @click="selectedWine=item"
             >
-               <v-icon>mdi-dots-vertical</v-icon>
+               <v-icon>mdi-dots-horizontal</v-icon>
             </v-btn>
          </template>
-
-         <v-list>
-            <v-list-item>
-               <v-list-item-title>Click Me 1</v-list-item-title>
-          </v-list-item>
-         </v-list>      
-      </v-menu>
-   </v-app-bar>
-
-   <v-data-table
-      :headers="headers"
-      :items="wines"
-      :loading="loading"
-      show-group-by
-      items-per-page="50"
-   >
-      <template #[`item.detail`]="{item}">
-         <v-btn
-            icon
-            color="yellow"
-            @click="selectedWine=item"
-         >
-            <v-icon>mdi-dots-horizontal</v-icon>
-         </v-btn>
-      </template>
-   </v-data-table>
+      </v-data-table>
 
       <wine-detail 
          v-if="selectedWine" 
          :wineid="selectedWine.id" 
          @close="selectedWine = null"/>
       <add-wine 
-         v-if="status === 'addWine'" 
-         @close="status = ''"/>
+         v-if="showAddWine" 
+         @close="showAddWine = false; getWine()"/>
+      <wine-store
+         v-model="showStoreLayout"
+      />
   </div>  
 </template>
 
@@ -63,39 +57,24 @@ import ItemPicker from '~/components/ItemPicker.vue';
 import WineDetail from '~/components/WineDetail.vue';
 import AddWine from '~/components/AddWine.vue';
 import Icon from '~/components/Icon.vue';
+import WineStore from '~/components/WineStore.vue';
+import { Wine } from '~/lib/Wine'
 
 export default Vue.extend({
-   components: { ItemPicker, WineDetail, AddWine, Icon },
-   async asyncData ({$axios, $config, error}) {
-      const url = `${$config.apiBaseUrl}/wine/`
-      try {
-         const response = await $axios.get(url);
-         if (response && response.data && response.data.data) {
-            return {
-               wines: response.data.data
-            }
-         } else {
-            throw { statusCode: 500, message: 'Failed to fetch wine data!'}
-         }
-      } catch (ex: any) {
-         error(ex)
-      }
-   },
+   components: { ItemPicker, WineDetail, AddWine, WineStore, Icon },
    data () {
       return {
+         pageSize: 50,
          filterBy: '',
          filterValue: '',
          sortField: '',
          sortDir: 'asc',
          loading: false,
-         wines: [],
-         selectedWine: null,
+         wines: [] as Wine[],
+         selectedWine: null as Wine | null,
          varietals: [],
-         status: '',
-         menuItems: [
-            { name: 'Add Wine' },
-            { name: 'Pick Varietal'}
-         ],
+         showAddWine: false,
+         showStoreLayout: false,
          headers: [
             {
                text: 'Varital',
@@ -131,6 +110,9 @@ export default Vue.extend({
          ]
       }
    },
+   mounted () {
+      this.getWine()
+   },
    methods: {
       async showVarietalPicker () {
          const url = `${this.$config.apiBaseUrl}/wine/varietals/`
@@ -142,35 +124,23 @@ export default Vue.extend({
       async getWine () {
          this.loading = true
          let url = `${this.$config.apiBaseUrl}/wine/`
+         let params = undefined
          if (this.filterBy !== '') {
-            url += `?${this.filterBy}=${this.filterValue}`
+            if (!params) params = []
+            params.push(`${this.filterBy}=${this.filterValue}`)
          }
 
          if (this.sortField !== '') {
-            if (url.endsWith('/'))
-               url += '?'
-            else
-               url += '&'
-            url += `sort=${this.sortField}&dir=${this.sortDir}`
+            if (!params) params = []
+            params.push(`sort=${this.sortField}`)
+            params.push(`dir=${this.sortDir}`)
          }
 
-         const response = await this.$axios.get(url)
-         if (response && response.data && response.data.data) {
-            this.wines = response.data.data
+         const response = await this.$api.wine.getWines(params)
+         if (response.success) {
+            this.wines = response.data
          }
          this.loading = false
-      },
-      selectMenuItem (i: any) {
-         switch (i.name) {
-            case 'Add Wine':
-               this.status = 'addWine'
-               break
-            case 'Pick Varietal':
-               this.showVarietalPicker()
-               this.status = ''
-               break
-         }
-
       },
       selectVarietal (v: any) {
         this.varietals = []

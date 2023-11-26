@@ -29,6 +29,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+     '~/plugins/api.ts',
      '~/plugins/axios'
   ],
 
@@ -65,6 +66,8 @@ export default {
          token: {
             property: 'token',
             name: 'x-api-key',
+            type: '',
+            maxAge: 1800
          },
          user: {
             autoFetch: false

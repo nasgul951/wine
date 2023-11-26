@@ -44,9 +44,10 @@ export default {
   methods: {
     async userLogin() {
       try {
-        let response = await this.$auth.loginWith('local', { data: this.login })
-        this.$router.push({ path: '/' })
+        console.log('loggin in...')
+        const response = await this.$auth.loginWith('local', { data: this.login })
         console.log(response)
+        this.$router.push({ path: '/' })
       } catch (err) {
          this.isFailure = true
         console.log(err)
