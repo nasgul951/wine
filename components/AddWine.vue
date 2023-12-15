@@ -65,6 +65,10 @@ export default Vue.extend({
       storeId: {
          type: Number,
          default: 1
+      },
+      wineId: {
+         type: Number,
+         default: null
       }
    },
    data () {
@@ -81,7 +85,7 @@ export default Vue.extend({
       }
    },
    mounted () {
-      if (this.wine.id)
+      if (this.wineId)
          this.getBottles()
    },
    methods: {
@@ -128,12 +132,5 @@ export default Vue.extend({
 </script>
 
 <style>
-   input {
-      border: 1px solid black;
-      background-color: white;
-   }
-   textarea {
-      border: 1px solid black;
-      background-color: white;
-   }
+
 </style>

@@ -3,7 +3,7 @@ export interface Wine {
     varietal: string
     vineyard: string
     label: string
-    vintage: number
+    vintage?: number
     notes: string
     count?: number
 }
@@ -18,6 +18,7 @@ export interface Bottle {
     depth?: number,
     consumed?: boolean,
     consumedDate?: string
+    createdDate?: string
 }
 
 export interface StoreItem {

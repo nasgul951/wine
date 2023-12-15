@@ -1,114 +1,265 @@
-<template lang="pug">
-   div(class="fixed top-0 right-0 w-full h-full bg-gray-500 bg-opacity-70")
-      div(class="flex md:h-full items-center justify-center")
-         div(class="md:w-2/3 w-full max-h-full border-2 bg-blue-200")
-            div.flex(class="p-3 bg-gray-500 font-semibold text-white") 
-               div.flex-grow 
-                  span(v-if="!wine.id") Add Wine
-                  span(v-if="wine.id") Wine Detail
-               div.cursor-pointer(@click="$emit('close')") x
-            div.w-full.flex.flex-wrap
-               div.flex-grow.p-2 
-                  div Vineyard:
-                  input(type="text" v-model="wine.vineyard" @change="patchWine('vineyard')")
-               div.flex-grow.p-2 
-                  div Label:
-                  input(type="text" v-model="wine.label" @change="patchWine('label')")
-            div.flex.flex-wrap
-               div.flex-grow.p-2 
-                  div Varietal:
-                  input(type="text" v-model="wine.varietal" @change="patchWine('varietal')")
-               div.flex-grow.p-2 
-                  div Vintage:
-                  input(type="text" v-model="wine.vintage" @change="patchWine('vintage')")
-            div.flex
-               div.flex-grow.p-2 
-                  div Notes:
-                  textarea.w-full(v-model="wine.notes" @change="patchWine('notes')")
-            div.flex.justify-end
-               div.p-2
-                  button(v-if="!wine.id" @click="addWine" class="bg-blue-600 hover:bg-blue-dark text-white font-bold py-2 px-4 rounded") Add Wine
-            div.flex.flex-col(v-if="wine.id")
-               h3.flex-grow.p-2.bg-gray-500.font-semibold.text-white Bottles
-               div.flex.flex-wrap
-                  div.w-28.p-2 
-                     div BinX:
-                  div.w-28.p-2 
-                     div BinY:
-                  div.w-28.p-2 
-                     div Depth:
-               div.flex.flex-wrap(v-for="b in bottles" v-bind:key="b.id")
-                  div.w-28.p-2 
-                     input.w-full(type="text" v-model="b.binX" @change="patchBottle('binX', b)")
-                  div.w-28.p-2 
-                     input.w-full(type="text" v-model="b.binY" @change="patchBottle('binY', b)")
-                  div.w-28.p-2 
-                     input.w-full(type="text" v-model="b.depth" @change="patchBottle('depth', b)")
-               div.flex.flex-wrap
-                  div.w-28.p-2 
-                     input.w-full(type="text" v-model="bottle.binX")
-                  div.w-28.p-2 
-                     input.w-full(type="text" v-model="bottle.binY")
-                  div.w-28.p-2 
-                     input.w-full(type="text" v-model="bottle.depth")
-                  div.w-7.p-2 
-                     button(
-                        class="px-3 bg-blue-400 rounded-lg font-extrabold text-white"
-                        @click="addBottle"   
-                     ) +
+<template>
+   <v-dialog
+      :value="value"
+      transition="dialog-bottom-transition"
+      max-width="600"
+      @input="(val) => $emit('input', val)"
+   >
+      <v-card> 
+         <v-toolbar color="primary">
+            <v-card-title>
+               <span v-if="!wineid">Add Wine</span>
+               <span v-else>Wine Detail</span>
+            </v-card-title>
+            <v-spacer />
+            <v-btn icon @click="close">
+               <v-icon>mdi-close</v-icon>
+            </v-btn>
+         </v-toolbar>
+         <v-container>
+            <v-row>
+               <v-col cols="6">
+                  <v-text-field 
+                     dense 
+                     outlined 
+                     label="Vineyard" 
+                     v-model="wine.vineyard" 
+                     @change="patchWine('vineyard')"
+                  />
+               </v-col>
+               <v-col cols="6">
+                  <v-text-field 
+                     dense 
+                     outlined 
+                     label="Label" 
+                     v-model="wine.label" 
+                     @change="patchWine('label')"
+                  />
+               </v-col>
+            </v-row>
+            <v-row>
+               <v-col cols="6">
+                  <v-text-field 
+                     dense 
+                     outlined 
+                     label="Varietal" 
+                     v-model="wine.varietal" 
+                     @change="patchWine('varietal')"
+                  />
+               </v-col>
+               <v-col cols="6">
+                  <v-text-field 
+                     dense 
+                     outlined 
+                     label="Vintage" 
+                     v-model="wine.vintage" 
+                     @change="patchWine('vintage')"
+                  />
+               </v-col>
+            </v-row>
+            <v-row>
+               <v-col cols="12">
+                  <v-textarea 
+                     outlined 
+                     dense 
+                     label="Notes" 
+                     v-model="wine.notes" 
+                     @change="patchWine('notes')"
+                  />
+               </v-col>
+            </v-row>
+            <v-card-actions>
+               <v-spacer />
+                  <v-btn
+                     color="primary" 
+                     v-if="!wine.id" 
+                     @click="addWine()"
+                  >Add Wine</v-btn>
+            </v-card-actions>
+            <v-divider />
+            <v-data-table
+               :items="bottles"
+               :headers="bottleHeaders"
+            >
+               <template #[`item.binX`]="{item}">
+                  <v-text-field 
+                     v-model="item.binX"
+                     @change="patchBottle({id: item.id, binX: item.binX})" 
+                  />
+               </template>
+               <template #[`item.binY`]="{item}">
+                  <v-text-field 
+                     v-model="item.binY"
+                     @change="patchBottle({id: item.id, binY: item.binY})" 
+                  />
+               </template>
+               <template #[`item.depth`]="{item}">
+                  <v-text-field 
+                     v-model="item.depth"
+                     @change="patchBottle({id: item.id, depth: item.depth})" 
+                  />
+               </template>
+               <template #[`item.action`]="{item}">
+                  <v-btn
+                     icon
+                     @click="patchBottle({id: item.id, consumed: true})"
+                  >
+                     <v-icon>mdi-close-octagon-outline</v-icon>
+                  </v-btn>
+               </template>
+
+               <template #body.append>
+                  <tr v-if="wine.id">
+                     <td>
+                        <v-text-field 
+                           v-model="bottle.binX"
+                        />
+                     </td>
+                     <td>
+                        <v-text-field 
+                           v-model="bottle.binY"
+                        />
+                     </td>
+                     <td>
+                        <v-text-field 
+                           v-model="bottle.depth"
+                        />
+                     </td>
+                     <td>
+                        <v-btn
+                           icon
+                           @click="addBottle()"
+                        >
+                           <v-icon>mdi-plus</v-icon>
+                        </v-btn>
+                     </td>
+                  </tr>
+               </template>
+            </v-data-table>
+         </v-container>
+      </v-card>
+   </v-dialog>
+            <!-- //- div.flex.flex-col(v-if="wine.id")
+            //-    h3.flex-grow.p-2.bg-gray-500.font-semibold.text-white Bottles
+            //-    div.flex.flex-wrap
+            //-       div.w-28.p-2 
+            //-          div BinX:
+            //-       div.w-28.p-2 
+            //-          div BinY:
+            //-       div.w-28.p-2 
+            //-          div Depth:
+            //-    div.flex.flex-wrap(v-for="b in bottles" v-bind:key="b.id")
+            //-       div.w-28.p-2 
+            //-          v-text-field(dense v-model="b.binX" @change="patchBottle({id: b.id, binX: b.binX})")
+            //-       div.w-28.p-2 
+            //-          v-text-field(dense v-model="b.binY" @change="patchBottle({id: b.id, binY: b.binY})")
+            //-       div.w-28.p-2 
+            //-          v-text-field(dense v-model="b.depth" @change="patchBottle({id: b.id, depth: b.depth})")
+            //-       div.w-7.p-2 
+            //-          button(
+            //-             class="px-3 bg-blue-400 rounded-lg font-extrabold text-white"
+            //-             @click="patchBottle({id: b.id, consumed: true})"   
+            //-          ) -
+            //-    div.flex.flex-wrap
+            //-       div.w-28.p-2 
+            //-          v-text-field(dense  v-model="bottle.binX")
+            //-       div.w-28.p-2 
+            //-          v-text-field(dense v-model="bottle.binY")
+            //-       div.w-28.p-2 
+            //-          v-text-field(dense v-model="bottle.depth")
+            //-       div.w-7.p-2 
+            //-          button(
+            //-             class="px-3 bg-blue-400 rounded-lg font-extrabold text-white"
+            //-             @click="addBottle"   
+            //-          ) + -->
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { Wine, Bottle } from '~/lib/Wine'
+
 export default Vue.extend({
    props: {
+      value: {
+         type: Boolean,
+         default: false
+      },
       wineid: {
          type: Number,
          default: null,
+      },
+      storeId: {
+         type: Number,
+         default: 1
       }
    },
    data () {
       return {
          wine: {
-            id: 0,
             vineyard: '',
             label: '',
             varietal: '',
-            vintage: '',
-            nodes: ''
-         },
+         } as Wine,
          bottle: {
-            wineid: 0,
-            storageid: 1,
-            binX: '',
-            binY: '',
-            depth: ''
-         },
-         bottles: []
+         } as Bottle,
+         bottles: [] as Bottle[],
+         bottleHeaders: [
+            {
+               text: 'Bin X',
+               value: 'binX',
+            },
+            {
+               text: 'Bin Y',
+               value: 'binY'
+            },
+            {
+               text: 'Depth',
+               value: 'depth'
+            },
+            {
+               value: 'action'
+            }
+         ],
+         updated: false
       }
    },
-   mounted () {
-      if (this.wineid)
-         this.getWine()
-   },
-   methods: {
-      async getWine () {
-         const url = `${this.$config.apiBaseUrl}/wine/?id=${this.wineid}`
-         const response = await this.$axios.get(url)
-         if (response && response.data && response.data.data) {
-            this.wine = response.data.data
-            this.getBottles()
+   watch: {
+      value (newVal, oldVal) {
+         if (!newVal && oldVal && this.updated) {
+            this.$emit('updated', this.wineid)
+            this.updated = false
          }
       },
+      wineid (newVal) {
+         this.getWine()
+      }
+   },
+   methods: {
+      close () {
+         this.$emit('input', false)
+      },
       async addWine () {
-         const url = `${this.$config.apiBaseUrl}/wine/`
-         const response = await this.$axios.put(url, this.wine)
-         if (response && response.data && response.data.data) {
-            this.wine = response.data.data
+         const result = await this.$api.wine.put(this.wine)
+         if (result.success) {
+            this.wine = result.data
             this.getBottles()
+         } else {
+            alert('Failed to add wine')
+         }
+      },
+      async getWine () {
+         const result = await this.$api.wine.get(this.wineid)
+         if (result.success) {
+            this.wine = result.data
+            this.getBottles()
+         } else {
+            alert('Failed to get wine detail')
          }
       },
       async patchWine (f: string) {
+         if (!this.wine.id)
+            return; // nothing to patch
+
          const b = {
             id: this.wine.id,
             [f]: (this.wine as any)[f]
@@ -117,34 +268,38 @@ export default Vue.extend({
          const response = await this.$axios.patch(url, b)
          if (response && response.data && response.data.data) {
             this.wine = response.data.data
+            this.updated = true
          }
       },
       async addBottle () {
-         const url = `${this.$config.apiBaseUrl}/wine/bottles/`
-         const response = await this.$axios.put(url, this.bottle)
-         if (response && response.data && response.data.data) {
-            this.bottle.binX = ''
-            this.bottle.binY = ''
-            this.bottle.depth = ''
+         this.bottle.wineId = this.wine.id
+         this.bottle.storageId = this.storeId
+         const result = await this.$api.wine.putBottle(this.bottle)
+         if (result.success) {
+            this.bottle.binX = undefined
+            this.bottle.binY = undefined
+            this.bottle.depth = undefined
             this.getBottles()
+            this.updated = true
+         } else {
+            alert('Failed to add bottle')
          }
       },
-      async patchBottle (f: string, b: any) {
-         const p = {
-            id: b.bottleid,
-            [f]: b[f]
-         }
-         const url = `${this.$config.apiBaseUrl}/wine/bottles/`
-         const response = await this.$axios.patch(url, p)
-         if (response && response.data && response.data.data) {
-            b = response.data.data
+      async patchBottle (b: Bottle) {
+         const result = await this.$api.wine.patchBottle(b)
+         if (result.success) {
+            this.getBottles()
+            this.updated = true
+         } else {
+            alert('Failed to update bottle')
          }
       },
       async getBottles () {
-         const url = `${this.$config.apiBaseUrl}/wine/bottles/?wineid=${this.wine.id}`
-         const response = await this.$axios.get(url)
-         if (response && response.data && response.data.data) {
-            this.bottles = response.data.data
+         const result = await this.$api.wine.getBottles(this.wine.id)
+         if (result.success) {
+            this.bottles = result.data
+         } else {
+            alert('Failed to get bottles')
          }
       }
 

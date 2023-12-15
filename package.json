@@ -9,18 +9,18 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@nuxtjs/auth-next": "^5.0.0-1648802546.c9880dc",
     "@nuxtjs/axios": "^5.13.6",
+    "babel-core": "^6.26.3",
     "core-js": "^3.15.1",
     "nuxt": "^2.15.3",
     "pug": "^3.0.2",
     "pug-plain-loader": "^1.1.0"
   },
   "devDependencies": {
-    "@nuxt/types": "^2.15.7",
+    "@nuxt/types": "^2.17.2",
     "@nuxt/typescript-build": "^2.1.0",
-    "@nuxtjs/tailwindcss": "^4.2.0",
-    "@nuxtjs/vuetify": "^1.12.3",
-    "postcss": "^8.3.5"
+    "@nuxtjs/vuetify": "^1.12.3"
   }
 }

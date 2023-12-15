@@ -16,7 +16,7 @@
             class="w-80 grid grid-cols-6 gap-1 border-4 bg-gray-800 border-gray-800 text-center" 
             v-if="loaded"
          >
-            <div class="h-12 text-white flex items-center justify-center box-content"
+            <div class="h-12 text-white d-flex items-center justify-center box-content"
                v-for="bin in store" 
                v-bind:key="bin.id"
                @click="getBinList(bin.id)"
@@ -211,3 +211,39 @@
       }
    })
  </script>
+
+ <style scoped>
+   .w-80 {
+      width: 20rem;
+   } 
+   .h-12 {
+      height: 3rem;
+   } 
+   .h-24 {
+      height: 6rem;
+   }
+   .grid {
+      display: grid;
+   }
+   .grid-cols-6 {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+   } 
+   .col-span-3 {
+      grid-column: span 3 / span 3;
+   }
+   .row-span-2 {
+      grid-row: span 2 / span 2;
+   }
+   .gap-1 {
+      gap: 0.25rem;
+   } 
+   .border-4 {
+      border-width: 4px;
+   } 
+   .text-center {
+      text-align: center;
+   }
+   .box-content {
+      box-sizing: content-box;
+   }
+</style>

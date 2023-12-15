@@ -8,7 +8,7 @@
          <v-spacer></v-spacer>
          <v-btn
             icon
-            @click=" showAddWine = true"
+            @click=" showWineDetail = true"
          >
             <v-icon>mdi-plus</v-icon>
          </v-btn>
@@ -31,7 +31,7 @@
             <v-btn
                icon
                color="yellow"
-               @click="selectedWine=item"
+               @click="selectWine(item)"
             >
                <v-icon>mdi-dots-horizontal</v-icon>
             </v-btn>
@@ -39,12 +39,10 @@
       </v-data-table>
 
       <wine-detail 
-         v-if="selectedWine" 
-         :wineid="selectedWine.id" 
-         @close="selectedWine = null"/>
-      <add-wine 
-         v-if="showAddWine" 
-         @close="showAddWine = false; getWine()"/>
+         v-model="showWineDetail" 
+         :wineid="selectedWineId" 
+         @updated="getWine()"
+      />
       <wine-store
          v-model="showStoreLayout"
       />
@@ -59,6 +57,7 @@ import AddWine from '~/components/AddWine.vue';
 import Icon from '~/components/Icon.vue';
 import WineStore from '~/components/WineStore.vue';
 import { Wine } from '~/lib/Wine'
+import { numberLiteralTypeAnnotation } from '@babel/types';
 
 export default Vue.extend({
    components: { ItemPicker, WineDetail, AddWine, WineStore, Icon },
@@ -72,9 +71,11 @@ export default Vue.extend({
          loading: false,
          wines: [] as Wine[],
          selectedWine: null as Wine | null,
+         selectedWineId: null as number | null,
          varietals: [],
          showAddWine: false,
          showStoreLayout: false,
+         showWineDetail: false,
          headers: [
             {
                text: 'Varital',
@@ -113,6 +114,12 @@ export default Vue.extend({
    mounted () {
       this.getWine()
    },
+   watch: {
+      showWineDetail(newVal, oldVal) {
+         if (oldVal && !newVal)
+            this.selectedWineId = null
+      }
+   },
    methods: {
       async showVarietalPicker () {
          const url = `${this.$config.apiBaseUrl}/wine/varietals/`
@@ -141,6 +148,11 @@ export default Vue.extend({
             this.wines = response.data
          }
          this.loading = false
+      },
+      selectWine (w: Wine) {
+         console.log(w.id)
+         this.selectedWineId = w.id!
+         this.showWineDetail = true
       },
       selectVarietal (v: any) {
         this.varietals = []
