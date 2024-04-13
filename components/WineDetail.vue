@@ -111,13 +111,16 @@
                <template #body.append>
                   <tr v-if="wine.id">
                      <td>
-                        <v-text-field 
-                           v-model="bottle.binX"
-                        />
+                        &nbsp;
                      </td>
                      <td>
                         <v-text-field 
                            v-model="bottle.binY"
+                        />
+                     </td>
+                     <td>
+                        <v-text-field 
+                           v-model="bottle.binX"
                         />
                      </td>
                      <td>
@@ -139,39 +142,6 @@
          </v-container>
       </v-card>
    </v-dialog>
-            <!-- //- div.flex.flex-col(v-if="wine.id")
-            //-    h3.flex-grow.p-2.bg-gray-500.font-semibold.text-white Bottles
-            //-    div.flex.flex-wrap
-            //-       div.w-28.p-2 
-            //-          div BinX:
-            //-       div.w-28.p-2 
-            //-          div BinY:
-            //-       div.w-28.p-2 
-            //-          div Depth:
-            //-    div.flex.flex-wrap(v-for="b in bottles" v-bind:key="b.id")
-            //-       div.w-28.p-2 
-            //-          v-text-field(dense v-model="b.binX" @change="patchBottle({id: b.id, binX: b.binX})")
-            //-       div.w-28.p-2 
-            //-          v-text-field(dense v-model="b.binY" @change="patchBottle({id: b.id, binY: b.binY})")
-            //-       div.w-28.p-2 
-            //-          v-text-field(dense v-model="b.depth" @change="patchBottle({id: b.id, depth: b.depth})")
-            //-       div.w-7.p-2 
-            //-          button(
-            //-             class="px-3 bg-blue-400 rounded-lg font-extrabold text-white"
-            //-             @click="patchBottle({id: b.id, consumed: true})"   
-            //-          ) -
-            //-    div.flex.flex-wrap
-            //-       div.w-28.p-2 
-            //-          v-text-field(dense  v-model="bottle.binX")
-            //-       div.w-28.p-2 
-            //-          v-text-field(dense v-model="bottle.binY")
-            //-       div.w-28.p-2 
-            //-          v-text-field(dense v-model="bottle.depth")
-            //-       div.w-7.p-2 
-            //-          button(
-            //-             class="px-3 bg-blue-400 rounded-lg font-extrabold text-white"
-            //-             @click="addBottle"   
-            //-          ) + -->
 </template>
 
 <script lang="ts">
@@ -205,12 +175,16 @@ export default Vue.extend({
          bottles: [] as Bottle[],
          bottleHeaders: [
             {
-               text: 'Bin X',
-               value: 'binX',
+               text: 'Location',
+               value: 'storageDescription'
             },
             {
-               text: 'Bin Y',
+               text: 'Shelf',
                value: 'binY'
+            },
+            {
+               text: 'Pos',
+               value: 'binX',
             },
             {
                text: 'Depth',

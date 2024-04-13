@@ -3,7 +3,6 @@
       <v-app-bar
          color="deep-purple accent-4"
       >
-         <v-app-bar-nav-icon></v-app-bar-nav-icon>
          <v-toolbar-title>Wine List</v-toolbar-title>
          <v-spacer></v-spacer>
          <v-btn
@@ -31,7 +30,7 @@
             <v-btn
                icon
                color="yellow"
-               @click="selectWine(item)"
+               @click="selectWine(item.id)"
             >
                <v-icon>mdi-dots-horizontal</v-icon>
             </v-btn>
@@ -45,6 +44,7 @@
       />
       <wine-store
          v-model="showStoreLayout"
+         @selected="selectWine"
       />
   </div>  
 </template>
@@ -149,9 +149,8 @@ export default Vue.extend({
          }
          this.loading = false
       },
-      selectWine (w: Wine) {
-         console.log(w.id)
-         this.selectedWineId = w.id!
+      selectWine (id: number) {
+         this.selectedWineId = id
          this.showWineDetail = true
       },
       selectVarietal (v: any) {

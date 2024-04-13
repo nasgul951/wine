@@ -15,15 +15,16 @@
          <div class="absolute top-0 left-0" v-if="selectedBin">
             <v-list>
                <v-subheader>
-                  Location: {{ selectedBin.x }}, {{ selectedBin.y }}
+                  Shelf: {{ selectedBin.y }} - {{ selectedBin.x }}
                </v-subheader>
                <v-list-item-group color="primary">
                   <v-list-item 
                      v-for="wine in selectedBin.binList" 
                      v-bind:key="wine.bottleid"
+                     @click="selectWine(wine.wineid)"
                   >
                      <v-list-item-content>
-                        <v-list-item-title>{{ wine.vineyard }}</v-list-item-title>
+                        <v-list-item-title>{{ wine.depth }}: {{ wine.vineyard }}</v-list-item-title>
                         <v-list-item-subtitle>{{ wine.vintage }} {{ wine.label }} {{ wine.varietal }}</v-list-item-subtitle>
                      </v-list-item-content>
                   </v-list-item>
@@ -35,58 +36,14 @@
             class="pa-5 grid grid-cols-6 gap-1 border-4 pink red--border text-center" 
             v-if="loaded"
          >
-            <div class="h1 text-white d-flex items-center justify-center box-content"
+            <div class="bin h1 text-white d-flex items-center justify-center box-content"
                v-for="bin in store" 
                v-bind:key="bin.id"
                @click="getBinList(bin.id)"
-               :class="[bin.isDouble ? 'col-span-3 row-span-2 h2 pb-1' : '', {'pink lighten-5': bin.count != 0}, {'pink lighten-4': bin.count === 0}]"
+               :class="[bin.isDouble ? 'row-span-2 h2 pb-1' : '', bin.isRow ? 'col-span-6' : '', {'pink lighten-5': bin.count != 0}, {'pink lighten-4': bin.count === 0}]"
             >
                <div v-if="bin.count != 0">{{bin.count}}</div>
             </div>
-            <!-- <div class="absolute top-0 left-0" v-if="showBinContent">
-               <div class="flex bg-gray-300 p-2">
-                  <div class="flex-grow">Bin ({{selectedBin.x}}, {{selectedBin.y}}) Contents</div>
-                  <div class=cursor-pointer" @click="closeBin()">X</div>
-               </div>
-               <div class="flex flex-wrap bg-gray-500">
-                  <div class="w-28.p-2"> 
-                     <div>Varietal:</div>
-                  </div>
-                  <div class="w-28 p-2"> 
-                     <div>Vintage:</div>
-                  </div>
-                  <div class="w-28 p-2"> 
-                     <div>Vineyard:</div>
-                  </div>
-                  <div class="w-28 p-2"> 
-                     <div>Label:</div>
-                  </div>
-                  <div class="w-28 p-2"> 
-                     <div>Depth:</div>
-                  </div>
-               </div>
-               <div class="flex flex-wrap odd:bg-gray-300 even:bg-white"
-                  v-if="showBinContent"
-                  
-                  v-bind:key="w.bottleid"
-               >
-                  <div class="w-28 p-2"> 
-                     <div>{{w.varietal}}</div>
-                  </div>
-                  <div class="w-28 p-2"> 
-                     <div>{{w.vintage}}</div>
-                  </div>
-                  <div class="w-28 p-2"> 
-                     <div>{{w.vineyard}}</div>
-                  </div>
-                  <div class="w-28 p-2"> 
-                     <div>{{w.label}}</div>
-                  </div>
-                  <div class="w-28 p-2"> 
-                     <div>{{w.depth}}</div>
-                  </div>
-               </div>
-            </div> -->
          </div>
          <div v-else>
             <v-progress-circular />
@@ -109,6 +66,7 @@
       id: number
       count: number
       isDouble: boolean
+      isRow: boolean
    }
 
    export default Vue.extend({
@@ -135,6 +93,7 @@
       watch: {
          value (newVal, oldVal) {
             if (!oldVal && newVal) {
+               this.selectedBin = undefined
                this.getStore()
             }
          }
@@ -142,6 +101,10 @@
       methods: {
          closeDrawer () {
             this.$emit('input', false)
+         },
+         selectWine (id: number) {
+            this.$emit('selected', id)
+            this.closeDrawer()
          },
          async getBinList(binId: number) {
             const bin = this.unpackBinId(binId)
@@ -181,24 +144,54 @@
             let y = 0
             let ix = 0
             let d = this.data![ix] as any
-            for(let y=0; y<=15; y++) {
+
+            // treat 0 as single bin
+            let topCount = 0;
+            while (d.binY == 0) {
+               topCount += d.binCount
+               d = this.data![++ix] as any
+            }
+            this.store.push({
+               id: this.packBinId(0,0),
+               count: topCount,
+               isDouble: false,
+               isRow: true
+            })
+
+            for(let y=1; y<=15; y++) {
                for(let x=1; x<=6; x++) {
                   if ((y == d.binY) && (x == d.binX)) {
                      this.store.push({
                         id: this.packBinId(x,y),
                         count: d.binCount,
-                        isDouble: false
+                        isRow: false, //y === 0 || y === 16,
+                        isDouble: false //y === 16
                      })
                      d = this.data![++ix] as any
                   } else {
                      this.store.push({
                         id: this.packBinId(x,y),
                         count: 0, 
-                        isDouble: false
+                        isRow: false, // y === 0 || y === 16,
+                        isDouble: false //y === 16
                      })
                   }
                }
             }
+
+            // bottom as single bin
+            let bottomCount = 0
+            while (d.binY == 16) {
+               bottomCount += d.binCount
+               d = this.data![++ix] as any
+            }
+            this.store.push({
+               id: this.packBinId(0,16),
+               count: bottomCount,
+               isDouble: true,
+               isRow: true
+            })
+
          },
 
       }
@@ -206,6 +199,9 @@
  </script>
 
  <style scoped>
+   .bin {
+      cursor: pointer;
+   }
    .h1 {
       height: 2rem;
       line-height: 2rem;
@@ -222,6 +218,9 @@
    } 
    .col-span-3 {
       grid-column: span 3 / span 3;
+   }
+   .col-span-6 {
+      grid-column: span 6 / span 6;
    }
    .row-span-2 {
       grid-row: span 2 / span 2;
