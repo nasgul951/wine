@@ -2,8 +2,7 @@ export default {
   target: 'static',
   ssr: false,
   publicRuntimeConfig: {
-    apiBaseUrl: process.env.API_BASE_URL,
-    apiKey: process.env.API_KEY,
+    apiBaseUrl: process.env.API_BASE_URL
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
