@@ -97,7 +97,7 @@ export class WineApi implements IWineApi {
 
    async getBinList (storeId: number, binId: number): Promise<ApiResponse<StoreItem[]>> {
       try {
-         const result = await this._axios.get(this._baseApiUrl + `?id=${storeId}&binid=${binId}`)
+         const result = await this._axios.get(this._baseApiUrl + `store/?id=${storeId}&binid=${binId}`)
          return result.data
       } catch (err) {
          return { success: false, message: 'Failed to get bin listing'}

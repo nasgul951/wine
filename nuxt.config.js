@@ -19,7 +19,7 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/png', href: '/favicon.ico' }
     ]
   },
 
@@ -65,15 +65,14 @@ export default {
             property: 'token',
             name: 'x-api-key',
             type: '',
-            maxAge: 1800
          },
          user: {
-            autoFetch: false
+            property: false
          },
          endpoints: {
             login: { url: process.env.API_BASE_URL + '/auth/', method: 'post' },
-            user: false,
-            logout: false
+            user: { url: process.env.API_BASE_URL + '/auth/user/', method: 'get' },
+            logout: { url: process.env.API_BASE_URL + '/auth/logout/', method: 'post' }
          }
       }
       
