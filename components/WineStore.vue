@@ -160,7 +160,7 @@
 
             for(let y=1; y<=15; y++) {
                for(let x=1; x<=6; x++) {
-                  if ((y == d.binY) && (x == d.binX)) {
+                  if (d && (y == d.binY) && (x == d.binX)) {
                      this.store.push({
                         id: this.packBinId(x,y),
                         count: d.binCount,
@@ -181,7 +181,7 @@
 
             // bottom as single bin
             let bottomCount = 0
-            while (d.binY == 16) {
+            while (d && d.binY == 16) {
                bottomCount += d.binCount
                d = this.data![++ix] as any
             }
