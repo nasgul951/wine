@@ -17,7 +17,7 @@
             </v-btn>
          </v-toolbar>
          <v-container>
-            <v-row>
+            <v-row dense>
                <v-col cols="6">
                   <v-text-field 
                      dense 
@@ -37,7 +37,7 @@
                   />
                </v-col>
             </v-row>
-            <v-row>
+            <v-row dense>
                <v-col cols="6">
                   <v-text-field 
                      dense 
@@ -57,11 +57,12 @@
                   />
                </v-col>
             </v-row>
-            <v-row>
+            <v-row dense>
                <v-col cols="12">
                   <v-textarea 
                      outlined 
                      dense 
+                     rows="3"
                      label="Notes" 
                      v-model="wine.notes" 
                      @change="patchWine('notes')"
@@ -78,6 +79,8 @@
             </v-card-actions>
             <v-divider />
             <v-data-table
+               dense
+               hide-default-footer
                :items="bottles"
                :headers="bottleHeaders"
             >
@@ -98,6 +101,9 @@
                      v-model="item.depth"
                      @change="patchBottle({id: item.id, depth: item.depth})" 
                   />
+               </template>
+               <template #[`item.createdDate`]="{item}">
+                  <div class="fixed-4">{{ formatDate(item.createdDate) }}</div>
                </template>
                <template #[`item.action`]="{item}">
                   <v-btn
@@ -175,23 +181,33 @@ export default Vue.extend({
          bottles: [] as Bottle[],
          bottleHeaders: [
             {
-               text: 'Location',
-               value: 'storageDescription'
+               text: 'Store',
+               value: 'storageId',
+               sortable: false
             },
             {
                text: 'Shelf',
-               value: 'binY'
+               value: 'binY',
+               sortable: false
             },
             {
                text: 'Pos',
                value: 'binX',
+               sortable: false
             },
             {
                text: 'Depth',
-               value: 'depth'
+               value: 'depth',
+               sortable: false
             },
             {
-               value: 'action'
+               text: 'Date',
+               value: 'createdDate',
+               sortable: false
+            },
+            {
+               value: 'action',
+               sortable: false
             }
          ],
          updated: false
@@ -211,6 +227,11 @@ export default Vue.extend({
    methods: {
       close () {
          this.$emit('input', false)
+      },
+      formatDate(ds: string): string {
+         if (!ds) return 'null'
+         const d = new Date(ds)
+         return `${d.getFullYear()}-${d.getMonth()+1}`
       },
       async addWine () {
          const result = await this.$api.wine.put(this.wine)
@@ -280,3 +301,9 @@ export default Vue.extend({
    }
 })
 </script>
+
+<style scoped>
+   .fixed-4 {
+      width: 4em;
+   }
+</style>

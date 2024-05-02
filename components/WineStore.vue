@@ -143,13 +143,13 @@
             this.store = Array<ILocation>()
             let y = 0
             let ix = 0
-            let d = this.data![ix] as any
+            let d = this.data![ix] as StoreLocation
 
             // treat 0 as single bin
             let topCount = 0;
             while (d.binY == 0) {
                topCount += d.binCount
-               d = this.data![++ix] as any
+               d = this.data![++ix] as StoreLocation
             }
             this.store.push({
                id: this.packBinId(0,0),
@@ -167,7 +167,7 @@
                         isRow: false, //y === 0 || y === 16,
                         isDouble: false //y === 16
                      })
-                     d = this.data![++ix] as any
+                     d = this.data![++ix] as StoreLocation
                   } else {
                      this.store.push({
                         id: this.packBinId(x,y),
@@ -183,7 +183,7 @@
             let bottomCount = 0
             while (d && d.binY == 16) {
                bottomCount += d.binCount
-               d = this.data![++ix] as any
+               d = this.data![++ix] as StoreLocation
             }
             this.store.push({
                id: this.packBinId(0,16),
