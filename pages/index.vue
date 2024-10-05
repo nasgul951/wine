@@ -1,50 +1,35 @@
 <template>
   <div>
-      <v-app-bar
-         color="deep-purple accent-4"
-      >
-         <v-toolbar-title>Wine List</v-toolbar-title>
-         <v-spacer></v-spacer>
-         <v-btn
-            icon
-            @click=" showWineDetail = true"
-         >
-            <v-icon>mdi-plus</v-icon>
-         </v-btn>
-         <v-btn
-            icon
-            @click=" showStoreLayout = true"
-         >
-            <v-icon>mdi-grid</v-icon>
-         </v-btn>
-      </v-app-bar>
 
-      <v-data-table
-         :headers="headers"
-         :items="wines"
-         :loading="loading"
-         show-group-by
-         :items-per-page="pageSize"
+      <v-sheet
+         id="winelist"
       >
-         <template #[`item.detail`]="{item}">
-            <v-btn
-               icon
-               color="yellow"
-               @click="selectWine(item.id)"
+         <v-container>
+            <v-data-table
+               :headers="headers"
+               :items="wines"
+               :loading="loading"
+               :disable-pagination="true"
+               :hide-default-footer="true"
+               show-group-by
             >
-               <v-icon>mdi-dots-horizontal</v-icon>
-            </v-btn>
-         </template>
-      </v-data-table>
+               <template #[`item.detail`]="{item}">
+                  <v-btn
+                     icon
+                     color="yellow"
+                     @click="selectWine(item.id)"
+                  >
+                     <v-icon>mdi-dots-horizontal</v-icon>
+                  </v-btn>
+               </template>
+            </v-data-table>
+         </v-container>
+      </v-sheet>
 
       <wine-detail 
          v-model="showWineDetail" 
          :wineid="selectedWineId" 
          @updated="getWine()"
-      />
-      <wine-store
-         v-model="showStoreLayout"
-         @selected="selectWine"
       />
   </div>  
 </template>
@@ -74,7 +59,6 @@ export default Vue.extend({
          selectedWineId: null as number | null,
          varietals: [],
          showAddWine: false,
-         showStoreLayout: false,
          showWineDetail: false,
          headers: [
             {
