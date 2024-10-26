@@ -5,7 +5,7 @@
       &nbsp;
     </v-col>
     <v-col cols="10" md="4">
-      <v-form @submit="userLogin">
+      <v-form @submit.prevent="userLogin">
         <v-card class="pa-5" elevation="10" rounded>
           <div>
             <v-text-field 
